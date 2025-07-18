@@ -474,8 +474,8 @@ class BackOfficeActionsLoggerListener implements EventSubscriberInterface
 
         $this->logger->notice("Trash :");
         $this->logUserInformations();
-        $this->logger->notice("  - content id : " . $event->getTrashItem()->getContentInfo()->id);
-        $this->logger->notice("  - content name : " . $event->getTrashItem()->getContentInfo()->name);
+        $this->logger->notice("  - content id : " . $event->getLocation()->getContentInfo()->id);
+        $this->logger->notice("  - content name : " . $event->getLocation()->getContentInfo()->name);
         $this->logger->notice("  - location id : " . $event->getLocation()->id);
         $this->logger->notice("  - parent location id : " . $event->getLocation()->parentLocationId);
         try {

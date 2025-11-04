@@ -58,7 +58,7 @@ class ChildrenMoveCommand extends Command
      * @throws NotFoundException
      * @throws UnauthorizedException
      */
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         // Retrieve current Location
         $currentLocation = $this->locationService->loadLocation($this->currentParentLocationID);
@@ -101,7 +101,7 @@ class ChildrenMoveCommand extends Command
 
         if (!$helper->ask($input, $output, $question)) {
             $output->writeln('');
-            exit;
+            return self::FAILURE;
         }
 
         $output->writeln("");
@@ -121,6 +121,8 @@ class ChildrenMoveCommand extends Command
 
         $output->writeln("");
         $output->writeln("<info>Job finished !</info>");
+
+        return self::SUCCESS;
     }
 
     /**

@@ -159,7 +159,7 @@ class CopyContentFieldAllContentsCommand extends Command
         if (!$helper->ask($input, $output, $question)) {
             $output->writeln('');
 
-            exit;
+            return self::FAILURE;
         }
 
         $output->writeln("");
@@ -297,6 +297,8 @@ class CopyContentFieldAllContentsCommand extends Command
         }
         $output->writeln("");
         $output->writeln("<info>Job finished !</info>");
+
+        return self::SUCCESS;
     }
 
     /**

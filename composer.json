@@ -26,13 +26,10 @@
     "MIT"
   ],
   "require": {
-    "php": "^7.4 || ^8.0",
-    "ibexa/oss": "^4.0.2",
+    "php": ">=8.3",
+    "ibexa/oss": "^5.0.0",
     "ext-json": "*",
     "ext-openssl": "*"
-  },
-  "suggest": {
-    "tanoconsulting/ezmigrationbundle2": "main"
   },
   "autoload": {
     "psr-4": {

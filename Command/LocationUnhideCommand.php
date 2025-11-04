@@ -52,7 +52,7 @@ class LocationUnhideCommand extends Command
      * @throws NotFoundException
      * @throws UnauthorizedException
      */
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         if ($locationID = $input->getArgument('location')) {
             $output->write("Unhide locationID $locationID : ");
@@ -62,5 +62,7 @@ class LocationUnhideCommand extends Command
             $this->locationService->unhideLocation($location);
             $output->writeln("<info>" . $contentName . "</info>");
         }
+
+        return self::SUCCESS;
     }
 }

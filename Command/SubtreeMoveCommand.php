@@ -58,7 +58,7 @@ class SubtreeMoveCommand extends Command
      * @throws NotFoundException
      * @throws UnauthorizedException
      */
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         // Retrieve current Location
         $currentLocation = $this->locationService->loadLocation($this->currentLocationID);
@@ -84,7 +84,7 @@ class SubtreeMoveCommand extends Command
         if (!$helper->ask($input, $output, $question)) {
             $output->writeln('');
 
-            return;
+            return self::FAILURE;
         }
 
         $output->writeln("");
@@ -100,6 +100,8 @@ class SubtreeMoveCommand extends Command
 
         $output->writeln("");
         $output->writeln("<info>Job finished !</info>");
+
+        return self::SUCCESS;
     }
 
     /**

@@ -29,9 +29,11 @@ class CleanRedisCacheCommand extends Command
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         // To clear all cache
         $this->cachePool->clear();
+
+        return self::SUCCESS;
     }
 }

@@ -78,7 +78,7 @@ class RemoveCommand extends Command
      * @throws NotFoundException
      * @throws UnauthorizedException
      */
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         if ($contentID = intval($input->getOption('content'))) {
             $output->write("Remove contentID $contentID : ");
@@ -90,8 +90,14 @@ class RemoveCommand extends Command
         }
         if ($contentType = $input->getOption('contenttype')) {
             $output->write("Remove Contents of this Content Type $contentType : ");
+            // Ask confirmation before removing all contents of a type
+            if (!$this->askConfirmation($input, $output)) {
+                return self::FAILURE;
+            }
             $this->removeContentTypeContents($input, $output, $contentType);
         }
+
+        return self::SUCCESS;
     }
 
     /**
@@ -141,7 +147,6 @@ class RemoveCommand extends Command
         unset($searchResults);
 
         $output->writeln(sprintf("Number of contents to remove : <info>%s</info>", $totalCount));
-        $this->askConfirmation($input, $output);
 
         $offset = 0;
         while ($offset <= $totalCount) {
@@ -165,7 +170,7 @@ class RemoveCommand extends Command
      * @param InputInterface $input
      * @param OutputInterface $output
      */
-    private function askConfirmation(InputInterface $input, OutputInterface $output): void
+    private function askConfirmation(InputInterface $input, OutputInterface $output): bool
     {
         // Ask confirmation
         $output->writeln("");
@@ -178,7 +183,9 @@ class RemoveCommand extends Command
         if (!$helper->ask($input, $output, $question)) {
             $output->writeln('');
 
-            exit;
+            return false;
         }
+
+        return true;
     }
 }

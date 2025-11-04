@@ -52,9 +52,11 @@ class PurgeTrashCommand extends Command
      * @param OutputInterface $output
      * @throws UnauthorizedException
      */
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->repository->getTrashService()->emptyTrash();
         $output->writeln("Trash emptied");
+
+        return self::SUCCESS;
     }
 }

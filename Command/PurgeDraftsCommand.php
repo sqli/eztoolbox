@@ -63,7 +63,7 @@ class PurgeDraftsCommand extends Command
      * @throws InvalidArgumentException
      * @throws UnauthorizedException
      */
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         // Count all contents
         $query = new Query();
@@ -131,5 +131,7 @@ class PurgeDraftsCommand extends Command
             // Modify offset for next iteration
             $query->offset += self::FETCH_LIMIT;
         }
+
+        return self::SUCCESS;
     }
 }

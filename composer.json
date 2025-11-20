@@ -7,7 +7,7 @@
   "authors": [
     {
       "name": "SQLI",
-      "homepage": "http://www.sqli.com"
+      "homepage": "https://www.sqli.com"
     },
     {
       "name": "VERNER Damien",
@@ -29,7 +29,9 @@
     "php": ">=8.3",
     "ibexa/oss": "^5.0.0",
     "ext-json": "*",
-    "ext-openssl": "*"
+    "ext-openssl": "*",
+    "ext-iconv": "*",
+    "ext-intl": "*"
   },
   "autoload": {
     "psr-4": {

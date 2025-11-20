@@ -144,7 +144,7 @@ abstract class ParameterHandlerAbstractEntity implements ParameterHandlerInterfa
      * @param OutputInterface|null $output
      * @return mixed
      */
-    public function getData(OutputInterface $output = null)
+    public function getData(OutputInterface $output = null): mixed
     {
         if (
             $parameter = $this->entityManager
@@ -153,5 +153,7 @@ abstract class ParameterHandlerAbstractEntity implements ParameterHandlerInterfa
         ) {
             return $parameter->getParams();
         }
+
+        return null;
     }
 }

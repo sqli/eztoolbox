@@ -22,7 +22,7 @@ class Type extends GenericType implements FieldValueFormMapperInterface, Indexab
 
     public function mapFieldValueForm(FormInterface $fieldForm, FieldData $data)
     {
-        $definition = $data->fieldDefinition;
+        $definition = $data->getFieldDefinition();
         $fieldForm->add(
             'value',
             SqliToolboxType::class,

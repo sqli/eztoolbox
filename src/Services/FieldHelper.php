@@ -10,15 +10,8 @@ use Ibexa\Core\Helper\TranslationHelper;
 
 class FieldHelper
 {
-    /** @var EzFieldHelper */
-    private $fieldHelper;
-    /** @var TranslationHelper */
-    private $translationHelper;
-
-    public function __construct(EzFieldHelper $fieldHelper, TranslationHelper $translationHelper)
+    public function __construct(protected EzFieldHelper $fieldHelper)
     {
-        $this->fieldHelper = $fieldHelper;
-        $this->translationHelper = $translationHelper;
     }
 
     /**

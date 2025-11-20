@@ -20,8 +20,6 @@ use Ibexa\Contracts\Core\Repository\Events\Trash\TrashEvent;
 use Ibexa\Contracts\Core\Repository\Events\User\CreateUserEvent;
 use Ibexa\Contracts\Core\Repository\Events\User\DeleteUserEvent;
 use Ibexa\Contracts\Core\Repository\Events\User\UpdateUserEvent;
-use Ibexa\Contracts\Core\Repository\Exceptions\NotFoundException;
-use Ibexa\Contracts\Core\Repository\Exceptions\UnauthorizedException;
 use Ibexa\Contracts\Core\Repository\Repository;
 use Ibexa\Contracts\Core\Repository\Values\Content\ContentInfo;
 use Ibexa\Contracts\Core\Repository\Values\Content\Location;
@@ -29,10 +27,6 @@ use Ibexa\Core\MVC\Symfony\Security\UserInterface;
 use Ibexa\Core\MVC\Symfony\SiteAccess;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
-//use Netgen\TagsBundle\API\Repository\Events\Tags\CreateTagEvent;
-//use Netgen\TagsBundle\API\Repository\Events\Tags\DeleteTagEvent;
-//use Netgen\TagsBundle\API\Repository\Events\Tags\UpdateTagEvent;
-//use Netgen\TagsBundle\API\Repository\TagsService;
 use SQLI\EzToolboxBundle\Services\Formatter\SqliSimpleLogFormatter;
 use SQLI\EzToolboxBundle\Services\SiteAccessUtilsTrait;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -53,8 +47,6 @@ class BackOfficeActionsLoggerListener implements EventSubscriberInterface
     private $logger;
     /** @var Request */
     private $request;
-    /** @var TagsService */
-    private $tagsService;
     /** @var bool */
     private $adminLoggerEnabled;
 
@@ -63,14 +55,12 @@ class BackOfficeActionsLoggerListener implements EventSubscriberInterface
         Repository $repository,
         $logDir,
         RequestStack $requestStack,
-        //TagsService $tagsService,
         $adminLoggerEnabled,
         SiteAccess $siteAccess
     ) {
         $this->tokenStorage = $tokenStorage;
         $this->repository = $repository;
         $this->request = $requestStack->getCurrentRequest();
-        //$this->tagsService = $tagsService;
         $this->adminLoggerEnabled = (bool)$adminLoggerEnabled;
 
         // Handler and formatter
@@ -220,61 +210,6 @@ class BackOfficeActionsLoggerListener implements EventSubscriberInterface
         $this->logger->notice("  - content name : " . $event->getContentInfo()->name);
         $this->logger->notice("  - location ids : " . implode(',', $event->getLocations()));
     }
-
-    /**
-     * @param CreateTagEvent $event
-     * @throws NotFoundException
-     * @throws UnauthorizedException
-     */
-    /*public function logIfCreateTagEvent(CreateTagEvent $event)
-    {
-        // Log only for admin siteaccesses
-        if (!$this->adminLoggerEnabled || !$this->isAdminSiteAccess()) {
-            return;
-        }
-
-        $parentTagName = "no parent";
-        if ($event->getTag()->hasParent()) {
-            $parentTagName = $this->tagsService->loadTag($event->getTag()->parentTagId)->getKeyword();
-        }
-        $this->logger->notice("Tag creation :");
-        $this->logUserInformations();
-        $this->logger->notice("  - tag id : " . $event->getTag()->id);
-        $this->logger->notice("  - tag name : " . $event->getTag()->getKeyword());
-        $this->logger->notice("  - tag parent id : " . $event->getTag()->parentTagId);
-        $this->logger->notice("  - tag parent name : " . $parentTagName);
-    }*/
-
-    /**
-     * @param UpdateTagEvent $event
-     */
-    /*public function logIfUpdateTagEvent(UpdateTagEvent $event)
-    {
-        // Log only for admin siteaccesses
-        if (!$this->adminLoggerEnabled || !$this->isAdminSiteAccess()) {
-            return;
-        }
-
-        $this->logger->notice("Tag update :");
-        $this->logUserInformations();
-        $this->logger->notice("  - tag id : " . $event->getTag()->id);
-        $this->logger->notice("  - new tag name : " . $event->getTag()->getKeyword());
-    }*/
-
-    /**
-     * @param DeleteTagEvent $event
-     */
-    /*public function logIfDeleteTagEvent(DeleteTagEvent $event)
-    {
-        // Log only for admin siteaccesses
-        if (!$this->adminLoggerEnabled || !$this->isAdminSiteAccess()) {
-            return;
-        }
-
-        $this->logger->notice("Tag delete :");
-        $this->logUserInformations();
-        $this->logger->notice("  - tag id : " . $event->getTag()->id);
-    }*/
 
     /**
      * @param MoveSubtreeEvent $event

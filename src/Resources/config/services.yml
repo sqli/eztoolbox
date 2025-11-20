@@ -13,7 +13,7 @@ services:
 
 #    Ibexa\Core\Helper\TranslationHelper: '@Ibexa\Core\Helper\TranslationHelper'
 #    Ibexa\Core\Helper\FieldHelper: '@Ibexa\Core\Helper\FieldHelper'
-    Ibexa\Core\MVC\Symfony\View\ViewManagerInterface: '@Ibexa\Bundle\Core\View\Manager'
+#    Ibexa\Core\MVC\Symfony\View\ViewManagerInterface: '@Ibexa\Bundle\Core\View\Manager'
 #    Ibexa\Core\MVC\Symfony\Templating\Twig\Extension\ContentExtension: '@ezpublish.twig.extension.content'
 
     SQLI\EzToolboxBundle\Command\:
@@ -64,3 +64,6 @@ services:
     SQLI\EzToolboxBundle\Serializer\SqliToolbox\ValueDenormalizer:
         tags:
             - { name: serializer.denormalizer }
+
+    annotation_reader:
+        class: Doctrine\Common\Annotations\AnnotationReader

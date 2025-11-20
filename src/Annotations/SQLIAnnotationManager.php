@@ -2,6 +2,7 @@
 
 namespace SQLI\EzToolboxBundle\Annotations;
 
+use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -18,20 +19,16 @@ class SQLIAnnotationManager
 {
     /**
      * Classname of annotation
-     * @var string
      */
-    private $annotation;
-    /** @var array */
-    private $directories;
-    /** @var Reader */
-    private $annotationReader;
+    protected string $annotation;
+    protected array $directories;
+    protected AnnotationReader $annotationReader;
     /**
      * Project root directory
-     * @var string
      */
-    private $projectDir;
+    protected string $projectDir;
 
-    public function __construct($annotation, $directories, $projectDir, Reader $annotationReader)
+    public function __construct($annotation, $directories, $projectDir, AnnotationReader $annotationReader)
     {
         $this->annotation = $annotation;
         $this->directories = $directories;

@@ -11,7 +11,7 @@ use Ibexa\Contracts\Core\Persistence\Content\VersionInfo;
  */
 class MediaStorage extends BinaryBaseStorage
 {
-    public function storeFieldData(VersionInfo $versionInfo, Field $field, array $context)
+    public function storeFieldData(VersionInfo $versionInfo, Field $field)
     {
         // Original filename, convert characters when it's possible (or remove them)
         $fileName = $field->value->externalData['fileName'];
@@ -23,6 +23,6 @@ class MediaStorage extends BinaryBaseStorage
         // Cleaned filename can be used in original process
         $field->value->externalData['fileName'] = $fileName;
 
-        return parent::storeFieldData($versionInfo, $field, $context);
+        return parent::storeFieldData($versionInfo, $field);
     }
 }

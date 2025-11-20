@@ -1,8 +1,8 @@
 {
   "name": "sqli/eztoolbox",
-  "description": "SQLI eZToolbox is a bundle used in SQLI projects gathering some bundles like \"SQLI Entities Manager\", \"SQLI Command Toolbox\", some helpers and some Twig operators",
+  "description": "SQLI eZToolbox is a bundle used in SQLI projects gathering some bundles like \"SQLI Entities Manager\", \"SQLI src/Command Toolbox\", some helpers and some Twig operators",
   "keywords": ["sqli", "ibexa", "crud", "entities", "toolbox", "ibexa", "oss", "content", "commerce", "dxp"],
-  "homepage": "https://github.com/DocDams/sqli-eztoolbox",
+  "homepage": "https://github.com/sqli/eztoolbox",
   "type": "symfony-bundle",
   "authors": [
     {
@@ -33,11 +33,27 @@
   },
   "autoload": {
     "psr-4": {
-      "SQLI\\EzToolboxBundle\\": ""
+      "SQLI\\EzToolboxBundle\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "SQLI\\EzToolboxBundle\\tests\\": "tests/"
     }
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.6",
-    "phpunit/phpunit": "^9.5"
+    "phpunit/phpunit": "^9.5",
+    "ibexa/rector": "~5.0",
+    "matthiasnoback/symfony-dependency-injection-test": "^5.0",
+    "phpstan/phpstan": "^2.0",
+    "phpstan/phpstan-phpunit": "^2.0",
+    "phpstan/phpstan-symfony": "^2.0"
+  },
+  "scripts": {
+    "fix-cs": "php-cs-fixer fix --config=.php-cs-fixer.php --show-progress=dots",
+    "check-cs": "@fix-cs --dry-run",
+    "phpstan": "phpstan analyse",
+    "test": "phpunit -c phpunit.xml"
   }
 }

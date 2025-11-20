@@ -17,31 +17,18 @@ use Twig\TwigFunction;
 
 class FetchExtension extends AbstractExtension
 {
-    protected FetchHelper $fetchHelper;
-    protected ViewManagerInterface $viewManager;
-    protected Repository $repository;
     protected LoggerInterface $logger;
 
     public function __construct(
+        protected FetchHelper $fetchHelper,
+        protected ViewManagerInterface $viewManager,
+        protected Repository $repository,
         $logDir
     ) {
         $handler = new StreamHandler("$logDir/sqli-eztoolbox_" . date("Y-m-d") . '.log');
         $handler->setFormatter(new SqliSimpleLogFormatter());
         $this->logger = new Logger('SQLILogException');
         $this->logger->pushHandler($handler);
-    }
-
-    /**
-     * @required
-     */
-    public function setDependencies(
-        FetchHelper $fetchHelper,
-        ViewManagerInterface $viewManager,
-        Repository $repository
-    ) {
-        $this->fetchHelper = $fetchHelper;
-        $this->viewManager = $viewManager;
-        $this->repository = $repository;
     }
 
     public function getFunctions()

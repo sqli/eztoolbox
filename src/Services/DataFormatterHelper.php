@@ -217,7 +217,7 @@ class DataFormatterHelper
         $sz = ["o", "Ko", "Mo", "Go", "To", "Po"];
         $factor = (int)floor((strlen($bytes) - 1) / 3);
 
-        return sprintf("%.{$decimals}f ", $bytes / pow(1024, $factor)) . @$sz[$factor];
+        return DataFormatterHelper . phpsprintf("%.{$decimals}f ", $bytes / pow(1024, $factor)) . @$sz[$factor];
     }
 
     /**

@@ -2,14 +2,23 @@ SQLI eZ Toolbox Bundle
 ========================================
 
 [SQLI](http://www.sqli.com) eZToolbox is a bundle used in SQLI projects gathering some bundles like "SQLI Entities Manager", "SQLI Command Toolbox", some helpers and some Twig operators
-Compatible with Ibexa 3.3
+Compatible with eZPlatform/Ibexa >= 2.x.
+
+eZToolbox follow the same major release number as Ibexa (eZPlatform for older versions), so please adapt the composer require command to match with your version of Ibexa.
+
+| Ibexa version  | eZToolbox's version |
+|----------------|---------------------|
+| eZPlatform 2.x | sqli/eztoolbox=^2.0 |
+| Ibexa 3.x      | sqli/eztoolbox=^3.0 |
+| Ibexa 4.x      | sqli/eztoolbox=^4.0 |
+| Ibexa 5.x      | sqli/eztoolbox=^5.0 |
 
 Installation
 ------------
 
 ### Install with composer
 ```
-composer require sqli/eztoolbox=^2.0
+composer require sqli/eztoolbox=^5.0
 ```
 
 ### Register the bundle

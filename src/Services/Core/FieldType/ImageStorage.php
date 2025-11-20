@@ -8,7 +8,7 @@ use Ibexa\Contracts\Core\Persistence\Content\VersionInfo;
 
 class ImageStorage extends BaseImageStorage
 {
-    public function storeFieldData(VersionInfo $versionInfo, Field $field, array $context)
+    public function storeFieldData(VersionInfo $versionInfo, Field $field): bool
     {
         // Original filename, convert characters when it's possible (or remove them)
         $fileName = $field->value->externalData['fileName'];
@@ -20,6 +20,6 @@ class ImageStorage extends BaseImageStorage
         // Cleaned filename can be used in original process
         $field->value->externalData['fileName'] = $fileName;
 
-        return parent::storeFieldData($versionInfo, $field, $context);
+        return parent::storeFieldData($versionInfo, $field);
     }
 }

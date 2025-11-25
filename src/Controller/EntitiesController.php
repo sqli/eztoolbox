@@ -8,7 +8,7 @@ use Ibexa\Core\MVC\Symfony\Security\Authorization\Attribute;
 use Pagerfanta\Adapter\ArrayAdapter;
 use Pagerfanta\Pagerfanta;
 use ReflectionException;
-use SQLI\EzToolboxBundle\Annotations\Annotation\Entity;
+use SQLI\EzToolboxBundle\Annotations\SQLIEntity;
 use SQLI\EzToolboxBundle\Classes\Filter;
 use SQLI\EzToolboxBundle\Form\EntityManager\EditElementType;
 use SQLI\EzToolboxBundle\Form\EntityManager\FilterType;
@@ -24,25 +24,12 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class EntitiesController extends AbstractController
 {
-    /** @var FlashBagNotificationHandler */
-    protected $flashBagNotificationHandler;
-    /** @var EntityManagerInterface */
-    protected $entityManager;
-    /** @var EntityHelper */
-    protected $entityHelper;
-    /** @var TranslatorInterface */
-    protected $translator;
-
     public function __construct(
-        FlashBagNotificationHandler $flashBagNotificationHandler,
-        EntityManagerInterface $entityManager,
-        EntityHelper $entityHelper,
-        TranslatorInterface $translator
+        protected FlashBagNotificationHandler $flashBagNotificationHandler,
+        protected EntityManagerInterface $entityManager,
+        protected EntityHelper $entityHelper,
+        protected TranslatorInterface $translator
     ) {
-        $this->flashBagNotificationHandler = $flashBagNotificationHandler;
-        $this->entityManager = $entityManager;
-        $this->entityHelper = $entityHelper;
-        $this->translator = $translator;
     }
 
     /**
@@ -103,10 +90,10 @@ class EntitiesController extends AbstractController
         if ($filterForm->isSubmitted() && $filterForm->isValid()) {
             // Set filter in session, it will be retrieved in getEntity()
             $filterEntityHelper->setFilter($fqcn, $filter);
-            // Entity informations and all elements with sort (filter in session)
+            // Entity information and all elements with sort (filter in session)
             $params = $entityHelper->getEntity($fqcn, true, $sort);
         } else {
-            // Entity informations and all elements without any filter
+            // Entity information and all elements without any filter
             $params = $entityHelper->getEntity($fqcn, true, $sort);
         }
 
@@ -114,7 +101,7 @@ class EntitiesController extends AbstractController
         $params['filter_form'] = $filterForm->createView();
 
         // Change current page on PagerFanta
-        /** @var Entity $classAnnotation */
+        /** @var SQLIEntity $classAnnotation */
         $classAnnotation = $params['class']['annotation'];
         // Create a pager from array of elements
         $pager = new Pagerfanta(new ArrayAdapter($params['elements']));
@@ -149,10 +136,10 @@ class EntitiesController extends AbstractController
         if (array_key_exists('class', $entity) && array_key_exists('annotation', $entity['class'])) {
             $entityAnnotation = $entity['class']['annotation'];
             // Check if annotation exists
-            if ($entityAnnotation instanceof Entity) {
+            if ($entityAnnotation instanceof SQLIEntity) {
                 // Check if deletion is allowed
                 if ($entityAnnotation->isDelete()) {
-                    // Try to decode compound Id
+                    // Try to decode compound id
                     $compound_id = json_decode($compound_id, true);
 
                     // If valid compound Id, remove element
@@ -230,10 +217,10 @@ class EntitiesController extends AbstractController
         if (array_key_exists('class', $entity) && array_key_exists('annotation', $entity['class'])) {
             $entityAnnotation = $entity['class']['annotation'];
             // Check if annotation exists
-            if ($entityAnnotation instanceof Entity) {
+            if ($entityAnnotation instanceof SQLIEntity) {
                 // Check if modification is allowed
                 if ($entityAnnotation->isUpdate()) {
-                    // Try to decode compound Id
+                    // Try to decode compound id
                     $compound_id = json_decode($compound_id, true);
 
                     // If valid compound Id, update element
@@ -241,7 +228,7 @@ class EntitiesController extends AbstractController
                         // Find element
                         $element = $entityHelper->findOneBy($fqcn, $compound_id);
 
-                        // Build form according to element and entity informations
+                        // Build form according to element and entity information
                         $form = $this->createForm(EditElementType::class, $element, ['entity' => $entity]);
                         $form->handleRequest($request);
 
@@ -310,34 +297,34 @@ class EntitiesController extends AbstractController
         if (array_key_exists('class', $entity) && array_key_exists('annotation', $entity['class'])) {
             $entityAnnotation = $entity['class']['annotation'];
             // Check if annotation exists
-            if ($entityAnnotation instanceof Entity) {
+            if ($entityAnnotation instanceof SQLIEntity) {
                 // Check if modification is allowed
                 $compound_id = json_decode($compound_id, true);
-                    if (!empty($compound_id)) {
-                        // Find element
-                        $element = $this->entityHelper->findOneBy($fqcn, $compound_id);
+                if (!empty($compound_id)) {
+                    // Find element
+                    $element = $this->entityHelper->findOneBy($fqcn, $compound_id);
 
-                        // Build form according to element and entity informations
-                        $form = $this->createForm(
-                            EditElementType::class,
-                            $element,
-                            ['entity' => $entity, 'context' => $context]
+                    // Build form according to element and entity information
+                    $form = $this->createForm(
+                        EditElementType::class,
+                        $element,
+                        ['entity' => $entity, 'context' => $context]
+                    );
+                    $form->handleRequest($request);
+
+                    // Display form
+                    $params['form'] = $form->createView();
+                    $params['fqcn'] = $fqcn;
+                    $params['class'] = $entity['class'];
+
+                    return $this
+                        ->render(
+                            '@SQLIEzToolbox/Entities/view.html.twig',
+                            $params
                         );
-                        $form->handleRequest($request);
-
-                        // Display form
-                        $params['form'] = $form->createView();
-                        $params['fqcn'] = $fqcn;
-                        $params['class'] = $entity['class'];
-
-                        return $this
-                            ->render(
-                                '@SQLIEzToolbox/Entities/view.html.twig',
-                                $params
-                            );
-                    }
                 }
             }
+        }
         // Redirect to entity homepage (list of elements)
         return $this->redirectToRoute(
             'sqli_eztoolbox_entitymanager_entity_homepage',
@@ -367,13 +354,13 @@ class EntitiesController extends AbstractController
         if (array_key_exists('class', $entity) && array_key_exists('annotation', $entity['class'])) {
             $entityAnnotation = $entity['class']['annotation'];
             // Check if annotation exists
-            if ($entityAnnotation instanceof Entity) {
+            if ($entityAnnotation instanceof SQLIEntity) {
                 // Check if modification is allowed
                 if ($entityAnnotation->isUpdate()) {
                     // New element
                     $element = new $fqcn();
 
-                    // Build form according to element and entity informations
+                    // Build form according to element and entity information
                     $form = $this->createForm(EditElementType::class, $element, ['entity' => $entity]);
                     $form->handleRequest($request);
 
@@ -439,7 +426,7 @@ class EntitiesController extends AbstractController
         if (array_key_exists('class', $entity) && array_key_exists('annotation', $entity['class'])) {
             $entityAnnotation = $entity['class']['annotation'];
             // Check if annotation exists
-            if ($entityAnnotation instanceof Entity) {
+            if ($entityAnnotation instanceof SQLIEntity) {
                 // Check if CSV exportation is allowed
                 if ($entityAnnotation->isCSVExportable()) {
                     // Find element

@@ -1,54 +1,53 @@
 includes:
-    - phpstan-baseline.neon
-	- /tools/.composer/vendor-bin/phpstan/vendor/ekino/phpstan-banned-code/extension.neon
-    - vendor/phpstan/phpstan-phpunit/extension.neon
-    - vendor/phpstan/phpstan-symfony/extension.neon
+    - /tools/.composer/vendor-bin/phpstan/vendor/ekino/phpstan-banned-code/extension.neon
+    - /tools/.composer/vendor-bin/phpstan/vendor/phpstan/phpstan-phpunit/extension.neon
+    - /tools/.composer/vendor-bin/phpstan/vendor/phpstan/phpstan-symfony/extension.neon
 
 parameters:
-	level: 1
-	reportUnmatchedIgnoredErrors: false
-	paths:
-		- src
-		- tests
+    level: 1
+    reportUnmatchedIgnoredErrors: false
+    paths:
+        - src
+        - tests
     ignoreErrors:
         - message: "#^Cannot call method (log|debug|info|notice|warning|error|critical|alert|emergency)\\(\\) on Psr\\\\Log\\\\LoggerInterface\\|null\\.$#"
-	banned_code:
-		nodes:
-			# enable detection of echo
-			-
-				type: Stmt_Echo
-				functions: null
+    banned_code:
+        nodes:
+            # enable detection of echo
+            -
+                type: Stmt_Echo
+                functions: null
 
-			# enable detection of eval
-			-
-				type: Expr_Eval
-				functions: null
+            # enable detection of eval
+            -
+                type: Expr_Eval
+                functions: null
 
-			# enable detection of die/exit
-			-
-				type: Expr_Exit
-				functions: null
+            # enable detection of die/exit
+            -
+                type: Expr_Exit
+                functions: null
 
-			# enable detection of a set of functions
-			-
-				type: Expr_FuncCall
-				functions:
-					- dd
-					- debug_backtrace
-					- dump
-					- passthru
-					- phpinfo
-					- proc_open
-					- shell_exec
-					- system
-					- var_dump
+            # enable detection of a set of functions
+            -
+                type: Expr_FuncCall
+                functions:
+                    - dd
+                    - debug_backtrace
+                    - dump
+                    - passthru
+                    - phpinfo
+                    - proc_open
+                    - shell_exec
+                    - system
+                    - var_dump
 
-			# enable detection of print statements
-			-
-				type: Expr_Print
-				functions: null
+            # enable detection of print statements
+            -
+                type: Expr_Print
+                functions: null
 
-			# enable detection of shell execution by backticks
-			-
-				type: Expr_ShellExec
-				functions: null
+            # enable detection of shell execution by backticks
+            -
+                type: Expr_ShellExec
+                functions: null

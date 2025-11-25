@@ -3,15 +3,17 @@
 namespace SQLI\EzToolboxBundle\Annotations;
 
 use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Annotations\Reader;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
+use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionException;
-use SQLI\EzToolboxBundle\Annotations\Annotation\Entity as SQLIEntity;
-use SQLI\EzToolboxBundle\Annotations\Annotation\EntityProperty as SQLIEntityProperty;
-use SQLI\EzToolboxBundle\Annotations\Annotation\SQLIClassAnnotation;
+use ReflectionProperty;
+use SQLI\EzToolboxBundle\Annotations\Annotation\Entity as SQLIEntityAnnotation;
+use SQLI\EzToolboxBundle\Annotations\Attribute\Entity as SQLIEntityAttribute;
+use SQLI\EzToolboxBundle\Annotations\Annotation\EntityProperty as SQLIEntityPropertyAnnotation;
+use SQLI\EzToolboxBundle\Annotations\Attribute\EntityProperty as SQLIEntityPropertyAttribute;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -85,14 +87,24 @@ class SQLIAnnotationManager
                 // Create reflection class from generated namespace to read annotation
                 $class = new ReflectionClass($classNamespace);
 
-                // Search if $class use an SQLIClassAnnotation
+                // Search if $class use an SQLIEntityAttribute or SQLIEntityAnnotation
                 $classAnnotation = $this
-                    ->annotationReader
-                    ->getClassAnnotation($class, SQLIEntity::class);
-                // Check if $class use Doctrine\Entity annotation
+                    ->getClassAttribute($class, SQLIEntityAttribute::class);
+                if (!$classAnnotation) {
+                    // No attribute found, try with annotation
+                    $classAnnotation = $this
+                        ->annotationReader
+                        ->getClassAnnotation($class, SQLIEntityAnnotation::class);
+                }
+
+                // Check if $class use Doctrine\Entity attribute/annotation
                 $classDoctrineAnnotation = $this
-                    ->annotationReader
-                    ->getClassAnnotation($class, Entity::class);
+                    ->getClassAttribute($class, Entity::class);
+                if (!$classDoctrineAnnotation) {
+                    $classDoctrineAnnotation = $this
+                        ->annotationReader
+                        ->getClassAnnotation($class, Entity::class);
+                }
 
                 if (!$classAnnotation || !$classDoctrineAnnotation) {
                     // No SQLIClassAnnotation or isn't an entity, ignore her
@@ -123,8 +135,13 @@ class SQLIAnnotationManager
                     $extraLink = null;
 
                     $propertyAnnotation = $this
-                        ->annotationReader
-                        ->getPropertyAnnotation($reflectionProperty, SQLIEntityProperty::class);
+                        ->getPropertyAttribute($reflectionProperty, SQLIEntityPropertyAttribute::class);
+                    if (!$propertyAnnotation) {
+                        // No attribute found, try with annotation
+                        $propertyAnnotation = $this
+                            ->annotationReader
+                            ->getPropertyAnnotation($reflectionProperty, SQLIEntityPropertyAnnotation::class);
+                    }
 
                     if ($propertyAnnotation instanceof SQLIEntityProperty) {
                         // Check if a visibility information defined on entity's property thanks to 'visible' annotation
@@ -139,10 +156,18 @@ class SQLIAnnotationManager
                     }
 
                     // Check if nullable is sets to true
-                    $nullablePropertyAnnotation = $this
-                        ->annotationReader
-                        ->getPropertyAnnotation($reflectionProperty, Column::class);
-                    if ($nullablePropertyAnnotation) {
+                    $nullablePropertyAnnotation = $this->getPropertyAttribute($reflectionProperty, Column::class);
+                    if (!$nullablePropertyAnnotation) {
+                        $nullablePropertyAnnotation = $this
+                            ->annotationReader
+                            ->getPropertyAnnotation($reflectionProperty, Column::class);
+                    }
+                    // Column annotation/attribute found, check if type is boolean
+                    // To determinate if nullable is allowed or not
+                    if ($nullablePropertyAnnotation instanceof ReflectionAttribute) {
+                        $columnType = $nullablePropertyAnnotation->getArguments();
+                        $required = !($columnType['nullable'] ?? false);
+                    } elseif ($nullablePropertyAnnotation instanceof Column) {
                         $columnType = $nullablePropertyAnnotation->type;
                         $required = $columnType == "boolean" ? false : !$nullablePropertyAnnotation->nullable;
                     }
@@ -159,13 +184,25 @@ class SQLIAnnotationManager
                     ];
 
                     // Build primary key from Doctrine\Id annotation
-                    if ($this->annotationReader->getPropertyAnnotation($reflectionProperty, Id::class)) {
+                    $idPropertyAnnotation = $this
+                        ->getPropertyAttribute($reflectionProperty, Id::class);
+                    if (!$idPropertyAnnotation) {
+                        $idPropertyAnnotation = $this
+                            ->annotationReader
+                            ->getPropertyAnnotation($reflectionProperty, Id::class);
+                    }
+                    if ($idPropertyAnnotation) {
                         $compoundPrimaryKey[] = $reflectionProperty->getName();
                     }
                 }
 
-                /** @var SQLIClassAnnotation $classAnnotation */
-                $annotationClassname = substr(strrchr(get_class($classAnnotation), '\\'), 1);
+                /** @var SQLIEntityAnnotation|SQLIEntityAttribute $classAnnotation */
+                if ($classAnnotation instanceof ReflectionAttribute) {
+                    $annotationFqcn = $classAnnotation->getName();
+                } else {
+                    $annotationFqcn = get_class($classAnnotation);
+                }
+                $annotationClassname = substr(strrchr($annotationFqcn, '\\'), 1);
 
                 $annotatedClasses[$annotationClassname][$classNamespace] =
                     [
@@ -178,5 +215,37 @@ class SQLIAnnotationManager
         }
 
         return $annotatedClasses;
+    }
+
+    protected function getClassAttribute(ReflectionClass $class, string $annotationName): ?SQLIEntityAttribute
+    {
+        $attributes = $class->getAttributes();
+        foreach ($attributes as $attribute) {
+            if ($attribute->getName() === $annotationName) {
+                // Prepare SQLIEntityAttribute instance
+                $classAttribute = new SQLIEntityAttribute();
+                $classAttribute->create = $attribute->getArguments()['create'] ?? false;
+                $classAttribute->update = $attribute->getArguments()['update'] ?? false;
+                $classAttribute->delete = $attribute->getArguments()['delete'] ?? false;
+                $classAttribute->max_per_page = $attribute->getArguments()['max_per_page'] ?? 10;
+                $classAttribute->description = $attribute->getArguments()['description'] ?? "";
+                $classAttribute->csv_exportable = $attribute->getArguments()['csv_exportable'] ?? false;
+                $classAttribute->tabname = $attribute->getArguments()['tabname'] ?? "default";
+
+                return $classAttribute;
+            }
+        }
+        return null;
+    }
+
+    protected function getPropertyAttribute(ReflectionProperty $property, string $annotationName): ?ReflectionAttribute
+    {
+        $attributes = $property->getAttributes();
+        foreach ($attributes as $attribute) {
+            if ($attribute->getName() === $annotationName) {
+                return $attribute;
+            }
+        }
+        return null;
     }
 }

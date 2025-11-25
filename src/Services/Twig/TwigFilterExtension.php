@@ -2,13 +2,13 @@
 
 namespace SQLI\EzToolboxBundle\Services\Twig;
 
-use eZ\Publish\Core\MVC\Symfony\Security\Authorization\Attribute;
 use Ibexa\Contracts\Core\Repository\Repository;
 use Ibexa\Contracts\Core\Repository\Values\Content\Content;
 use Ibexa\Contracts\Core\Repository\Values\Content\Field;
 use Ibexa\Contracts\Core\Repository\Values\User\UserReference;
 use Ibexa\Core\Base\Exceptions\InvalidArgumentType;
 use Ibexa\Contracts\Core\SiteAccess\ConfigResolverInterface;
+use Ibexa\Core\MVC\Symfony\Security\Authorization\Attribute;
 use Ibexa\Core\MVC\Symfony\Templating\Twig\Extension\ContentExtension;
 use SQLI\EzToolboxBundle\Services\DataFormatterHelper;
 use SQLI\EzToolboxBundle\Services\FieldHelper;
@@ -19,33 +19,14 @@ use Twig\TwigFunction;
 
 class TwigFilterExtension extends AbstractExtension
 {
-    /** @var Repository */
-    private $repository;
-    /** @var DataFormatterHelper */
-    private $dataFormatterHelper;
-    /** @var ConfigResolverInterface */
-    private $configResolver;
-    /** @var FieldHelper */
-    private $fieldHelper;
-    /** @var ContentExtension */
-    private $contentExtension;
-    /** @var AuthorizationCheckerInterface */
-    protected $authorizationChecker;
-
     public function __construct(
-        Repository $repository,
-        DataFormatterHelper $dataFormatterHelper,
-        ConfigResolverInterface $configResolver,
-        FieldHelper $fieldHelper,
-        ContentExtension $contentExtension,
-        AuthorizationCheckerInterface $authorizationChecker
+        protected Repository $repository,
+        protected DataFormatterHelper $dataFormatterHelper,
+        protected ConfigResolverInterface $configResolver,
+        protected FieldHelper $fieldHelper,
+        protected ContentExtension $contentExtension,
+        protected AuthorizationCheckerInterface $authorizationChecker
     ) {
-        $this->repository = $repository;
-        $this->dataFormatterHelper = $dataFormatterHelper;
-        $this->configResolver = $configResolver;
-        $this->fieldHelper = $fieldHelper;
-        $this->contentExtension = $contentExtension;
-        $this->authorizationChecker = $authorizationChecker;
     }
 
     public function getFunctions()

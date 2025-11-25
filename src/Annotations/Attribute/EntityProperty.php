@@ -1,25 +1,27 @@
 <?php
 
-namespace SQLI\EzToolboxBundle\Annotations\Annotation;
+namespace SQLI\EzToolboxBundle\Annotations\Attribute;
 
 use Doctrine\Common\Annotations\Annotation;
+use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 
 /**
- * @package SQLI\EzToolboxBundle\Annotations
- *
  * @Annotation
+ * @NamedArgumentConstructor()
  * @Target({"PROPERTY"})
+ * @template T of object
  */
-final class EntityProperty implements SQLIEntityPropertyAnnotation
+#[Attribute(Attribute::TARGET_PROPERTY)]
+final class EntityProperty implements SQLIEntityPropertyAttribute
 {
-    public bool $visible = true;
-    public bool $readonly = false;
-    public string $description = "";
-    public ?array $choices = null;
-    /**
-     * @Enum({"content", "location", "tag"})
-     */
-    public ?string $extra_link = null;
+    public function __construct(
+        public bool $visible = true,
+        public bool $readonly = false,
+        public string $description = "",
+        public ?array $choices = null,
+        public ?string $extra_link = null, /* @Enum({"content", "location", "tag"}) */
+    ) {
+    }
 
     /**
      * @return bool

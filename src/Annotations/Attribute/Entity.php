@@ -1,24 +1,29 @@
 <?php
 
-namespace SQLI\EzToolboxBundle\Annotations\Annotation;
+namespace SQLI\EzToolboxBundle\Annotations\Attribute;
 
-use Doctrine\Common\Annotations\Annotation;
+use Attribute;
+use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 
 /**
- * @package SQLI\EzToolboxBundle\Annotations
- *
  * @Annotation
- * @Target({"CLASS"})
+ * @NamedArgumentConstructor()
+ * @Target("CLASS")
+ * @template T of object
  */
-final class Entity implements SQLIEntityAnnotation
+#[Attribute(Attribute::TARGET_CLASS)]
+final class Entity implements SQLIEntityAttribute
 {
-    public bool $create = false;
-    public bool $update = false;
-    public bool $delete = false;
-    public string $description = "";
-    public int $max_per_page = 10;
-    public bool $csv_exportable = false;
-    public string $tabname = "default";
+    public function __construct(
+        public bool $create = false,
+        public bool $update = false,
+        public bool $delete = false,
+        public string $description = "",
+        public int $max_per_page = 10,
+        public bool $csv_exportable = false,
+        public string $tabname = "default",
+    ) {
+    }
 
     /**
      * @return bool

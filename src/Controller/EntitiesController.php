@@ -346,8 +346,6 @@ class EntitiesController extends AbstractController
     {
         $this->denyAccessUnlessGranted(new Attribute('sqli_admin','entity_edit_element'));
 
-        $updateSuccessfull = false;
-
         // Check if class annotation allow modification
         $entity = $entityHelper->getEntity($fqcn, false);
 
@@ -364,49 +362,48 @@ class EntitiesController extends AbstractController
                     $form = $this->createForm(EditElementType::class, $element, ['entity' => $entity]);
                     $form->handleRequest($request);
 
-                    if ($form->isSubmitted() && $form->isValid()) {
-                        // Form is valid, update element
-                        $this->entityManager->persist($element);
-                        $this->entityManager->flush();
+                    if ($form->isSubmitted()) {
+                        if ($form->isValid()) {
+                            // Form is valid, update element
+                            $this->entityManager->persist($element);
+                            $this->entityManager->flush();
 
-                        $updateSuccessfull = true;
-                    } else {
-                        // Display form
-                        $params['form'] = $form->createView();
-                        $params['fqcn'] = $fqcn;
-                        $params['tabname'] = $entityAnnotation->getTabname();
-
-                        return $this
-                            ->render(
-                                '@SQLIEzToolbox/Entities/createElement.html.twig',
-                                $params
+                            // Display success notification
+                            $this->flashBagNotificationHandler->success(
+                                $this->translator->trans(
+                                    'entity.element.created',
+                                    [],
+                                    'sqli_admin'
+                                )
                             );
+
+                            // Redirect to entity homepage (list of elements)
+                            return $this->redirectToRoute(
+                                'sqli_eztoolbox_entitymanager_entity_homepage',
+                                ['fqcn' => $fqcn]
+                            );
+                        }
+                        // Display error notification
+                        $this->flashBagNotificationHandler->error($this->translator->trans(
+                            'entity.element.cannot_create',
+                            [],
+                            'sqli_admin'
+                        ));
                     }
                 }
             }
         }
 
-        if ($updateSuccessfull) {
-            // Display success notification
-            $this->flashBagNotificationHandler->success($this->translator->trans(
-                'entity.element.created',
-                [],
-                'sqli_admin'
-            ));
-        } else {
-            // Display error notification
-            $this->flashBagNotificationHandler->error($this->translator->trans(
-                'entity.element.cannot_create',
-                [],
-                'sqli_admin'
-            ));
-        }
+        // Display form
+        $params['form'] = $form->createView();
+        $params['fqcn'] = $fqcn;
+        $params['tabname'] = $entityAnnotation->getTabname();
 
-        // Redirect to entity homepage (list of elements)
-        return $this->redirectToRoute(
-            'sqli_eztoolbox_entitymanager_entity_homepage',
-            ['fqcn' => $fqcn]
-        );
+        return $this
+            ->render(
+                '@SQLIEzToolbox/Entities/createElement.html.twig',
+                $params
+            );
     }
 
     /**

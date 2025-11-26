@@ -45,7 +45,7 @@
                     {% set sidebar_right = knp_menu_get('sqli_eztoolbox.admin.edit_element.sidebar_right',
                         [],
                         {
-                            'save_button_name': form.children.submit.vars.id,
+                            'save_button_name': form.children.save_entity.vars.id,
                             'cancel_url': path( 'sqli_eztoolbox_entitymanager_entity_homepage',
                             { 'fqcn': fqcn } )
                         }

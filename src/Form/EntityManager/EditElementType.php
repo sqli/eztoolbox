@@ -96,7 +96,7 @@ class EditElementType extends AbstractType
         if ($options['context'] == 'edit') {
             $builder
                 ->add(
-                    'submit',
+                    'save_entity',
                     SubmitType::class,
                     [
                         'label' => 'form.button.label.submit',

@@ -28,7 +28,7 @@
         <table class="table ibexa-table--list">
             <thead>
             <tr>
-                <th class="ibexa-table__cell ibexa-table__cell--header" colspan="4">Filtre</th>
+                <th class="ibexa-table__cell ibexa-table__cell--header" colspan="5">Filtre</th>
             </tr>
             </thead>
             <tbody>
@@ -49,6 +49,10 @@
                         {{ 'entity.button.label.reset'|trans( {}, 'sqli_admin' ) }}
                     </a>
                 </td>
+                <td>
+                    {{ block( 'sqli_entity_export_csv') }}
+                    {{ block( 'sqli_entity_create_element') }}
+                </td>
             </tr>
             </tbody>
         </table>
@@ -57,10 +61,6 @@
         <div class="ibexa-table-header">
             <div class="ibexa-table-header__headline">
                 {{ "entity.elements.table.header"|trans({'%fqcn%': fqcn})|raw }}
-            </div>
-            <div>
-                {{ block( 'sqli_entity_export_csv') }}
-                {{ block( 'sqli_entity_create_element') }}
             </div>
         </div>
         {% if pager.currentPageResults|length == 0 %}
@@ -183,7 +183,7 @@
            href="{{ path( 'sqli_eztoolbox_entitymanager_entity_create_element',
                { 'fqcn': fqcn } ) }}"
            class="btn btn-primary">
-            <svg class="ibexa-icon ibexa-icon-create">
+            <svg class="ibexa-icon ibexa-icon-create" style="width: 1.5rem;height: 1.3rem" fill="white">
                 <use xlink:href="{{ asset('/bundles/ibexaadminuiassets/vendors/ids-assets/dist/img/all-icons.svg') }}#add"></use>
             </svg>
         </a>
@@ -196,7 +196,7 @@
            href="{{ path( 'sqli_eztoolbox_entitymanager_entity_export_csv',
                { 'fqcn': fqcn } ) }}"
            class="btn btn-primary">
-            <svg class="ibexa-icon ibexa-icon-form-data">
+            <svg class="ibexa-icon ibexa-icon-form-data" style="width: 1.5rem;height: 1.3rem" fill="white">
                 <use xlink:href="{{ asset('/bundles/ibexaadminuiassets/vendors/ids-assets/dist/img/all-icons.svg') }}#form-data"></use>
             </svg>
         </a>

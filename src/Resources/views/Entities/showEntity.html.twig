@@ -11,10 +11,15 @@
         { value: class.classname }
     ]} only %}
 {% endblock %}
-
+{% block context_menu %}
+    <div class="hstack gap-3 justify-content-end">
+        {{ block( 'sqli_entity_create_element') }}
+        {{ block( 'sqli_entity_export_csv') }}
+    </div>
+{% endblock %}
 {% block title %}{{ 'entity.page.title'|trans|desc('Entity page title') }}{% endblock %}
 
-{% block page_title %}
+{% block header %}
     {% include '@ibexadesign/ui/page_title.html.twig' with {
         title: 'entity.page.title'|trans|desc('Entity page title'),
         icon_name: 'object-state'
@@ -22,100 +27,105 @@
 {% endblock %}
 
 {% block content %}
-    <section class="container my-4">
-        {# Filters filter_form #}
-        {{ form_start( filter_form ) }}
-        <table class="table ibexa-table--list">
-            <thead>
-            <tr>
-                <th class="ibexa-table__cell ibexa-table__cell--header" colspan="5">Filtre</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="ibexa-table__row">
-                <td>
-                    {{ form_widget( filter_form.column_name ) }}
-                </td>
-                <td>
-                    {{ form_widget( filter_form.operand ) }}
-                </td>
-                <td>
-                    {{ form_widget( filter_form.value ) }}
-                </td>
-                <td>
-                    {{ form_widget( filter_form.filter ) }}
-                    <a class="btn"
+    <div class="ibexa-search-form px-0">
+        <section class="ibexa-search-form__results container ibexa-container">
+            <div class="ibexa-table-header">
+                <div class="ibexa-table-header__headline">
+                    {{ "entity.elements.table.header"|trans({'%fqcn%': fqcn})|raw }}
+                </div>
+            </div>
+            <div class="ibexa-scrollable-wrapper">
+                {% if pager.currentPageResults|length == 0 %}
+                    <p class="alert alert-warning">{{ 'entity.elements.table.no_elements'|trans }}</p>
+                {% else %}
+                    <table class="ibexa-table table ibexa-table--last-column-sticky">
+                        <thead>
+                        <tr class="ibexa-table__head-row">
+                            {% for property_name, property_infos in class.properties %}
+                                {% if property_infos.visible is same as(true) %}
+                                    <th class="ibexa-table__header-cell">
+                                        <span title="{{ property_infos.accessibility }}" class="hstack gap-2">
+                                            {# Sort ASC #}
+                                            <a href="{{ path('sqli_eztoolbox_entitymanager_entity_homepage',
+                                                {
+                                                    'fqcn': fqcn,
+                                                    'sort_column': property_name,
+                                                    'sort_order': 'ASC'
+                                                }) }}" class="btn ibexa-btn ibexa-btn--ghost ibexa-btn--no-text">
+                                                <svg class="ibexa-icon ibexa-icon-caret-up" style="width: 1.5rem;height: 1.5rem;">
+                                                    <use xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                         xlink:href="{{ asset('/bundles/ibexaadminuiassets/vendors/ids-assets/dist/img/all-icons.svg') }}#arrow-caret-up"></use>
+                                                </svg>
+                                            </a>
+                                            {{ property_name }}
+                                            {# Sort DESC #}
+                                            <a href="{{ path('sqli_eztoolbox_entitymanager_entity_homepage',
+                                                {
+                                                    'fqcn': fqcn,
+                                                    'sort_column': property_name,
+                                                    'sort_order': 'DESC'
+                                                }) }}" class="btn ibexa-btn ibexa-btn--ghost ibexa-btn--no-text">
+                                                <svg class="ibexa-icon ibexa-icon-caret-down" style="width: 1.5rem;height: 1.5rem;">
+                                                    <use xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                         xlink:href="{{ asset('/bundles/ibexaadminuiassets/vendors/ids-assets/dist/img/all-icons.svg') }}#arrow-caret-down"></use>
+                                                </svg>
+                                            </a>
+                                        </span>
+                                    </th>
+                                {% endif %}
+                            {% endfor %}
+                            <th class="ibexa-table__header-cell invisible">
+                                {{ 'entity.elements.table.column_header.operations'|trans }}
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody class="ibexa-table__body">
+                        {% for element in pager.currentPageResults %}
+                            {{ block( 'sqli_entity_element' ) }}
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+                <div class="ibexa-pagination mt-3">
+                    <div class="ibexa-pagination__info">
+
+                    </div>
+                    <div class="pagination ibexa-pagination__navigation">
+                        {{ pagerfanta(pager, 'ibexa') }}
+                    </div>
+                </div>
+            </div>
+        </section>
+        {# Filters filter_form #}
+        <section class="ibexa-filters ibexa-search-form__filters">
+            {{ form_start( filter_form ) }}
+            <div class="ibexa-filters__header">
+                <h3 class="ibexa-filters__title">Filtre</h3>
+                <div class="ibexa-filters__btns">
+                    <a class="btn ibexa-btn ibexa-btn--ghost ibexa-btn--small ibexa-btn--clear"
                        href="{{ path('sqli_eztoolbox_entitymanager_entity_homepage_reset_filter', {'fqcn': fqcn}) }}">
                         {{ 'entity.button.label.reset'|trans( {}, 'sqli_admin' ) }}
                     </a>
-                </td>
-                <td>
-                    {{ block( 'sqli_entity_export_csv') }}
-                    {{ block( 'sqli_entity_create_element') }}
-                </td>
-            </tr>
-            </tbody>
-        </table>
-        {{ form_end( filter_form ) }}
-
-        <div class="ibexa-table-header">
-            <div class="ibexa-table-header__headline">
-                {{ "entity.elements.table.header"|trans({'%fqcn%': fqcn})|raw }}
+                    {{ form_widget( filter_form.filter ) }}
+                </div>
             </div>
-        </div>
-        {% if pager.currentPageResults|length == 0 %}
-            <p class="alert alert-warning">{{ 'entity.elements.table.no_elements'|trans }}</p>
-        {% else %}
-            <table class="table">
-                <thead>
-                <tr>
-                    {% for property_name, property_infos in class.properties %}
-                        {% if property_infos.visible is same as(true) %}
-                            <th>
-                                <span title="{{ property_infos.accessibility }}" class="d-inline-flex">
-                                    {# Sort ASC #}
-                                    <a href="{{ path('sqli_eztoolbox_entitymanager_entity_homepage',
-                                        {
-                                            'fqcn': fqcn,
-                                            'sort_column': property_name,
-                                            'sort_order': 'ASC'
-                                        }) }}">
-                                        <svg class="ibexa-icon ibexa-icon-caret-up" style="width: 1.5rem;height: 1.5rem;">
-                                            <use xmlns:xlink="http://www.w3.org/1999/xlink"
-                                                 xlink:href="/bundles/ibexaadminui/img/ibexa-icons.svg#caret-up"></use>
-                                        </svg>
-                                    </a>
-                                    {{ property_name }}
-                                    {# Sort DESC #}
-                                    <a href="{{ path('sqli_eztoolbox_entitymanager_entity_homepage',
-                                        {
-                                            'fqcn': fqcn,
-                                            'sort_column': property_name,
-                                            'sort_order': 'DESC'
-                                        }) }}">
-                                        <svg class="ibexa-icon ibexa-icon-caret-down" style="width: 1.5rem;height: 1.5rem;">
-                                            <use xmlns:xlink="http://www.w3.org/1999/xlink"
-                                                 xlink:href="/bundles/ibexaadminui/img/ibexa-icons.svg#caret-down"></use>
-                                        </svg>
-                                    </a>
-                                </span>
-                            </th>
-                        {% endif %}
-                    {% endfor %}
-                    <th>
-                        {{ 'entity.elements.table.column_header.operations'|trans }}
-                    </th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for element in pager.currentPageResults %}
-                    {{ block( 'sqli_entity_element' ) }}
-                {% endfor %}
-                </tbody>
-            </table>
-        {% endif %}
-        {{ pagerfanta(pager, 'ibexa') }}
-    </section>
+            <div class="ibexa-filters__items vstack gap-2 pt-3">
+                <div class="ibexa-filters__item">
+                    {{ form_label(filter_form.column_name, null, {'label_attr': {'class': 'ibexa-label'}}) }}
+                    {{ form_widget( filter_form.column_name ) }}
+                </div>
+                <div class="ibexa-filters__item">
+                    {{ form_label(filter_form.operand, null, {'label_attr': {'class': 'ibexa-label'}}) }}
+                    {{ form_widget( filter_form.operand ) }}
+                </div>
+                <div class="ibexa-filters__item">
+                    {{ form_label(filter_form.value, null, {'label_attr': {'class': 'ibexa-label'}}) }}
+                    {{ form_widget( filter_form.value ) }}
+                </div>
+            </div>
+            {{ form_end( filter_form ) }}
+        </section>
+    </div>
 {% endblock %}
 
 {% block sqli_entity_element %}
@@ -126,53 +136,58 @@
     {% endfor %}
     {% set compound_id = compound_id|json_encode %}
 
-    <tr>
+    <tr class="ibexa-table__row">
         {% for property_name, property_infos in class.properties %}
             {% if property_infos.visible is same as(true) %}
                 {% set value = sqli_admin_attribute( element, property_name ) %}
                 {# If column flagged as extra link then column's value will be used as ID ... #}
                 {% if property_infos.extra_link == "content" %}
-                    <td><a href="{{ path( 'ibexa.content.view', { 'contentId': value } ) }}">{{ value }}</a></td>
+                    <td class="ibexa-table__cell"><a href="{{ path( 'ibexa.content.view', { 'contentId': value } ) }}">{{ value }}</a></td>
                 {% elseif property_infos.extra_link == "location" %}
                     {% set location = fetch_location(value) %}
-                    <td><a href="{{ path( 'ibexa.content.view',
+                    <td class="ibexa-table__cell"><a href="{{ path( 'ibexa.content.view',
                             { 'locationId': location.id, 'contentId': location.content.id } ) }}">{{ value }}</a></td>
                 {% elseif property_infos.extra_link == "tag" and bundle_exists( 'NetgenTagsBundle' ) %}
-                    <td><a href="{{ path('netgen_tags_admin_tag_show', { 'tagId': value }) }}">{{ value }}</a></td>
+                    <td class="ibexa-table__cell"><a href="{{ path('netgen_tags_admin_tag_show', { 'tagId': value }) }}">{{ value }}</a></td>
                 {% else %}
                     {# ... else, just display the value #}
-                    <td>{{ value }}</td>
+                    <td class="ibexa-table__cell">{{ value }}</td>
                 {% endif %}
             {% endif %}
         {% endfor %}
-        <td>
-            {% if has_access( 'sqli_admin','entity_view_element' ) %}
-                <a href="{{ path( 'sqli_eztoolbox_entitymanager_entity_view_element',
-                    { 'fqcn': fqcn, 'compound_id': compound_id }) }}">
-                    <svg class="ibexa-icon ibexa-icon-view" style="width: 1.5rem;height: 1.5rem;">
-                        <use xmlns:xlink="http://www.w3.org/1999/xlink"
-                             xlink:href="{{ asset('/bundles/ibexaadminuiassets/vendors/ids-assets/dist/img/all-icons.svg') }}#visibility"></use>
-                    </svg>
-                </a>
-            {% endif %}
-            {% if class.annotation.update and has_access( 'sqli_admin','entity_edit_element' ) %}
-                <a href="{{ path( 'sqli_eztoolbox_entitymanager_entity_edit_element',
-                    { 'fqcn': fqcn, 'compound_id': compound_id }) }}">
-                    <svg class="ibexa-icon ibexa-icon-edit" style="width: 1.5rem;height: 1.5rem;">
-                        <use xmlns:xlink="http://www.w3.org/1999/xlink"
-                             xlink:href="{{ asset('/bundles/ibexaadminuiassets/vendors/ids-assets/dist/img/all-icons.svg') }}#edit"></use>
-                    </svg>
-                </a>
-            {% endif %}
-            {% if class.annotation.delete and has_access( 'sqli_admin','entity_remove_element' ) %}
-                <a href="{{ path( 'sqli_eztoolbox_entitymanager_entity_remove_element',
-                    { 'fqcn': fqcn, 'compound_id': compound_id }) }}">
-                    <svg class="ibexa-icon ibexa-icon-trash" style="width: 1.5rem;height: 1.5rem;">
-                        <use xmlns:xlink="http://www.w3.org/1999/xlink"
-                             xlink:href="{{ asset('/bundles/ibexaadminuiassets/vendors/ids-assets/dist/img/all-icons.svg') }}#trash"></use>
-                    </svg>
-                </a>
-            {% endif %}
+        <td class="ibexa-table__cell ibexa-table__cell--has-action-btns">
+            <div class="ibexa-table__cell-btns-wrapper">
+                {% if has_access( 'sqli_admin','entity_view_element' ) %}
+                    <a href="{{ path( 'sqli_eztoolbox_entitymanager_entity_view_element',
+                        { 'fqcn': fqcn, 'compound_id': compound_id }) }}"
+                       class="btn ibexa-btn ibexa-btn--ghost ibexa-btn--no-text">
+                        <svg class="ibexa-icon ibexa-icon-view" style="width: 1.5rem;height: 1.5rem;">
+                            <use xmlns:xlink="http://www.w3.org/1999/xlink"
+                                 xlink:href="{{ asset('/bundles/ibexaadminuiassets/vendors/ids-assets/dist/img/all-icons.svg') }}#visibility"></use>
+                        </svg>
+                    </a>
+                {% endif %}
+                {% if class.annotation.update and has_access( 'sqli_admin','entity_edit_element' ) %}
+                    <a href="{{ path( 'sqli_eztoolbox_entitymanager_entity_edit_element',
+                        { 'fqcn': fqcn, 'compound_id': compound_id }) }}"
+                       class="btn ibexa-btn ibexa-btn--ghost ibexa-btn--no-text">
+                        <svg class="ibexa-icon ibexa-icon-edit" style="width: 1.5rem;height: 1.5rem;">
+                            <use xmlns:xlink="http://www.w3.org/1999/xlink"
+                                 xlink:href="{{ asset('/bundles/ibexaadminuiassets/vendors/ids-assets/dist/img/all-icons.svg') }}#edit"></use>
+                        </svg>
+                    </a>
+                {% endif %}
+                {% if class.annotation.delete and has_access( 'sqli_admin','entity_remove_element' ) %}
+                    <a href="{{ path( 'sqli_eztoolbox_entitymanager_entity_remove_element',
+                        { 'fqcn': fqcn, 'compound_id': compound_id }) }}"
+                       class="btn ibexa-btn ibexa-btn--ghost ibexa-btn--no-text">
+                        <svg class="ibexa-icon ibexa-icon-trash" style="width: 1.5rem;height: 1.5rem;">
+                            <use xmlns:xlink="http://www.w3.org/1999/xlink"
+                                 xlink:href="{{ asset('/bundles/ibexaadminuiassets/vendors/ids-assets/dist/img/all-icons.svg') }}#trash"></use>
+                        </svg>
+                    </a>
+                {% endif %}
+            </div>
         </td>
     </tr>
 {% endblock %}
@@ -182,10 +197,11 @@
         <a title="{{ 'entity.button.alt.create'|trans|desc('Create a new line') }}"
            href="{{ path( 'sqli_eztoolbox_entitymanager_entity_create_element',
                { 'fqcn': fqcn } ) }}"
-           class="btn btn-primary">
-            <svg class="ibexa-icon ibexa-icon-create" style="width: 1.5rem;height: 1.3rem" fill="white">
+           class="ibexa-btn btn ibexa-btn ibexa-btn--primary align-items-center">
+            <svg class="ibexa-icon ibexa-icon-create" >
                 <use xlink:href="{{ asset('/bundles/ibexaadminuiassets/vendors/ids-assets/dist/img/all-icons.svg') }}#add"></use>
             </svg>
+            {{ 'entity.button.alt.create'|trans|desc('Create a new line') }}
         </a>
     {% endif %}
 {% endblock %}
@@ -195,10 +211,11 @@
         <a title="{{ 'entity.button.alt.export_csv'|trans|desc('Export into CSV file') }}"
            href="{{ path( 'sqli_eztoolbox_entitymanager_entity_export_csv',
                { 'fqcn': fqcn } ) }}"
-           class="btn btn-primary">
-            <svg class="ibexa-icon ibexa-icon-form-data" style="width: 1.5rem;height: 1.3rem" fill="white">
+           class="ibexa-btn btn ibexa-btn ibexa-btn--secondary align-items-center">
+            <svg class="ibexa-icon ibexa-icon-form-data">
                 <use xlink:href="{{ asset('/bundles/ibexaadminuiassets/vendors/ids-assets/dist/img/all-icons.svg') }}#form-data"></use>
             </svg>
+            {{ 'entity.button.alt.export_csv'|trans|desc('Export into CSV file') }}
         </a>
     {% endif %}
 {% endblock %}

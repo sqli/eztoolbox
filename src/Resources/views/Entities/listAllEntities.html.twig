@@ -12,7 +12,7 @@
 
 {% block title %}{{ 'entities.page.title'|trans|desc('Entities page title') }}{% endblock %}
 
-{% block page_title %}
+{% block header %}
     {% include '@ibexadesign/ui/page_title.html.twig' with {
         title: 'entities.page.title'|trans|desc('Entities page title'),
         icon_name: 'object-state'
@@ -20,45 +20,56 @@
 {% endblock %}
 
 {% block content %}
-    <section class="container my-4">
+    <section class="container ibexa-container">
         <div class="ibexa-table-header">
             <div class="ibexa-table-header__headline">{{ "entities.list.table.header"|trans }}</div>
         </div>
-        {% if classes|length == 0 %}
-            <p class="alert alert-warning">{{ 'entities.list.table.no_entities_configured'|trans }}</p>
-        {% else %}
-            <table class="table">
-                <thead>
-                <tr>
-                    <th>{{ 'entities.list.table.column_header.classname'|trans }}</th>
-                    <th>{{ 'entities.list.table.column_header.description'|trans }}</th>
-                    <th>{{ 'entities.list.table.column_header.total_elements'|trans }}</th>
-                </tr>
-                </thead>
-                <tbody>
-                    {% for fqcn, class_infos in classes %}
-                        <tr>
-                            <td>
-                                <span title="{{ block('class_annotation_properties') }}">
-                                    {% if has_access( 'sqli_admin','entity_show' ) %}
-                                        <a href="{{ path( 'sqli_eztoolbox_entitymanager_entity_homepage',
-                                            {'fqcn': fqcn}) }}">{{ class_infos.classname }}
-                                        </a>
-                                    {% else %}
-                                        {{ class_infos.classname }}
-                                    {% endif %}
-                                </span>
-                            </td>
-                            <td>
-                                {{ class_infos.annotation.description }}
-                            </td>
-                            <td>{{ class_infos.count }}</td>
+        <div class="ibexa-scrollable-wrapper">
+            {% if classes|length == 0 %}
+                <p class="alert alert-warning">{{ 'entities.list.table.no_entities_configured'|trans }}</p>
+            {% else %}
+                <table class="ibexa-table table ibexa-table--last-column-sticky">
+                    <thead>
+                        <tr class="ibexa-table__head-row">
+                            <th class="ibexa-table__header-cell">
+                                {{ 'entities.list.table.column_header.classname'|trans }}
+                            </th>
+                            <th class="ibexa-table__header-cell">
+                                {{ 'entities.list.table.column_header.description'|trans }}
+                            </th>
+                            <th class="ibexa-table__header-cell">
+                                {{ 'entities.list.table.column_header.total_elements'|trans }}
+                            </th>
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% endif %}
-        {#{{ pagerfanta(articles, 'ez') }}#}
+                    </thead>
+                    <tbody class="ibexa-table__body">
+                        {% for fqcn, class_infos in classes %}
+                            <tr class="ibexa-table__row">
+                                <td class="ibexa-table__cell">
+                                    <span title="{{ block('class_annotation_properties') }}">
+                                        {% if has_access( 'sqli_admin','entity_show' ) %}
+                                            <a href="{{ path( 'sqli_eztoolbox_entitymanager_entity_homepage',
+                                                {'fqcn': fqcn}) }}">{{ class_infos.classname }}
+                                            </a>
+                                        {% else %}
+                                            {{ class_infos.classname }}
+                                        {% endif %}
+                                    </span>
+                                </td>
+                                <td class="ibexa-table__cell">
+                                    {{ class_infos.annotation.description }}
+                                </td>
+                                <td class="ibexa-table__cell">{{ class_infos.count }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div class="mb-3">
+
+                </div>
+            {% endif %}
+            {#{{ pagerfanta(articles, 'ez') }}#}
+        </div>
     </section>
 {% endblock %}
 

@@ -35,7 +35,7 @@ class FilterType extends AbstractType
                 ),
                 'attr' =>
                     [
-                        'class' => "form-control",
+                        'class' => "ibexa-input ibexa-input--text form-control",
                     ],
             ]
         );
@@ -47,7 +47,7 @@ class FilterType extends AbstractType
                 'choices' => Filter::OPERANDS_MAPPING,
                 'attr' =>
                     [
-                        'class' => "form-control",
+                        'class' => "ibexa-input ibexa-input--text form-control",
                     ],
             ]
         );
@@ -57,7 +57,7 @@ class FilterType extends AbstractType
             [
                 'attr' =>
                     [
-                        'class' => "form-control",
+                        'class' => "ibexa-input ibexa-input--text form-control",
                         'placeholder' => $this->translator->trans(
                             "entity.field.placeholder.value",
                             [],
@@ -78,7 +78,7 @@ class FilterType extends AbstractType
                 ),
                 'attr' =>
                     [
-                        'class' => "btn-primary btn",
+                        'class' => "btn ibexa-btn ibexa-btn--secondary ibexa-btn--small ibexa-btn--apply",
                     ],
             ]
         );

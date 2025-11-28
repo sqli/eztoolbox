@@ -198,9 +198,9 @@
            href="{{ path( 'sqli_eztoolbox_entitymanager_entity_create_element',
                { 'fqcn': fqcn } ) }}"
            class="ibexa-btn btn ibexa-btn ibexa-btn--primary align-items-center">
-            <svg class="ibexa-icon ibexa-icon-create" >
+            {#<svg class="ibexa-icon ibexa-icon-create" >
                 <use xlink:href="{{ asset('/bundles/ibexaadminuiassets/vendors/ids-assets/dist/img/all-icons.svg') }}#add"></use>
-            </svg>
+            </svg>#}
             {{ 'entity.button.alt.create'|trans|desc('Create a new line') }}
         </a>
     {% endif %}
@@ -212,9 +212,9 @@
            href="{{ path( 'sqli_eztoolbox_entitymanager_entity_export_csv',
                { 'fqcn': fqcn } ) }}"
            class="ibexa-btn btn ibexa-btn ibexa-btn--secondary align-items-center">
-            <svg class="ibexa-icon ibexa-icon-form-data">
+            {#<svg class="ibexa-icon ibexa-icon-form-data">
                 <use xlink:href="{{ asset('/bundles/ibexaadminuiassets/vendors/ids-assets/dist/img/all-icons.svg') }}#form-data"></use>
-            </svg>
+            </svg>#}
             {{ 'entity.button.alt.export_csv'|trans|desc('Export into CSV file') }}
         </a>
     {% endif %}

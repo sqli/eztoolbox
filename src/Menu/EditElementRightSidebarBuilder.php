@@ -65,11 +65,11 @@ class EditElementRightSidebarBuilder extends AbstractBuilder
                 self::ITEM__SAVE,
                 [
                     'attributes' => [
-                        'class' => 'ibexa-btn--trigger',
+                        'class' => 'ibexa-btn--trigger ibexa-btn--primary',
                         'data-click' => sprintf('#%s', $options['save_button_name']),
                     ],
                     'label' => $this->translator->trans(self::ITEM__SAVE, [], 'sqli_admin'),
-                    'extras' => ['icon' => 'save'],
+                    //'extras' => ['icon' => 'save'],
                 ]
             )
                 ]);
@@ -79,9 +79,12 @@ class EditElementRightSidebarBuilder extends AbstractBuilder
             $this->createMenuItem(
                 self::ITEM__CANCEL,
                 [
+                    'attributes' => [
+                        'class' => 'ibexa-btn--secondary',
+                    ],
                     'uri' => $options['cancel_url'],
                     'label' => $this->translator->trans(self::ITEM__CANCEL, [], 'sqli_admin'),
-                    'extras' => ['icon' => 'circle-close'],
+                    //'extras' => ['icon' => 'circle-close'],
                 ]
             )
         );

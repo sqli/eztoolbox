@@ -1,22 +1,49 @@
-{% extends viewbaseLayout is defined ? viewbaseLayout : '@ibexadesign/ui/layout.html.twig' %}
+{#{% extends viewbaseLayout is defined ? viewbaseLayout : '@ibexadesign/ui/layout.html.twig' %}#}
+{% extends '@ibexadesign/ui/edit_base.html.twig' %}
 
 {% form_theme form with '@SQLIEzToolbox/form_fields.html.twig' only %}
 
 {% trans_default_domain 'sqli_admin' %}
 
-{% block breadcrumbs %}
-    {% set keytrad = constant('SQLI\\EzToolboxBundle\\Menu\\MenuListener::SQLI_ADMIN_MENU_ENTITIES_TAB_PREFIX') ~ tabname %}
-    {% include '@ibexadesign/ui/breadcrumbs.html.twig' with { items: [
-        { value: 'breadcrumb.admin'|trans(domain='messages')|desc('Admin') },
-        { value: keytrad|trans( {}, 'sqli_admin' )|desc('Entity'),
-            url: path( 'sqli_eztoolbox_entitymanager_homepage', { 'tabname': tabname } ) },
-        { value: fqcn,
-            url: path( 'sqli_eztoolbox_entitymanager_entity_homepage', { 'fqcn': fqcn } ) },
-        { value: 'entity.button.alt.create'|trans },
-    ]} only %}
-{% endblock %}
-
 {% block title %}{{ 'entity.creation.page.title'|trans|desc('Entity page title') }}{% endblock %}
+
+{% block header %}
+    <div class="ibexa-edit-header__containers">
+        <div class="ibexa-edit-header__container ibexa-edit-header__container--info-bar">
+            {% block breadcrumbs %}
+                {% set keytrad = constant('SQLI\\EzToolboxBundle\\Menu\\MenuListener::SQLI_ADMIN_MENU_ENTITIES_TAB_PREFIX') ~ tabname %}
+                {% include '@ibexadesign/ui/breadcrumbs.html.twig' with { items: [
+                    { value: 'breadcrumb.admin'|trans(domain='messages')|desc('Admin') },
+                    { value: keytrad|trans( {}, 'sqli_admin' )|desc('Entity'),
+                        url: path( 'sqli_eztoolbox_entitymanager_homepage', { 'tabname': tabname } ) },
+                    { value: fqcn,
+                        url: path( 'sqli_eztoolbox_entitymanager_entity_homepage', { 'fqcn': fqcn } ) },
+                    { value: 'entity.button.alt.create'|trans },
+                ]} only %}
+            {% endblock %}
+        </div>
+        <div class="ibexa-edit-header__container ibexa-edit-header__container--context-actions">
+            <div class="ibexa-edit-header__context-actions hstack justify-content-end gap-3">
+                {% set sidebar_right = knp_menu_get('sqli_eztoolbox.admin.edit_element.sidebar_right',
+                    [],
+                    {
+                        'save_button_name': form.children.save_entity.vars.id,
+                        'cancel_url': path( 'sqli_eztoolbox_entitymanager_entity_homepage',
+                        { 'fqcn': fqcn } )
+                    }
+                ) %}
+                {{ knp_menu_render(sidebar_right, {'template': '@ibexadesign/eztoolbox/menu/sidebar_right.html.twig'}) }}
+            </div>
+        </div>
+        <div class="ibexa-edit-header__container ibexa-edit-header__container--details">
+            <div class="ibexa-edit-header__title-section">
+                <h1 class="ibexa-edit-header__title">
+                    {{ 'entity.creation.page.title'|trans|desc('Entity page title') }}
+                </h1>
+            </div>
+        </div>
+    </div>
+{% endblock %}
 
 {% block page_title %}
     {% include '@ibexadesign/ui/page_title.html.twig' with {
@@ -26,33 +53,19 @@
 {% endblock %}
 
 {% block content %}
-    <div class="row align-items-stretch ibexa-main-row">
-        {% block left_sidebar %}{% endblock left_sidebar %}
-        <div class="container px-0 pb-4 mt-3 ibexa-content-edit-container">
-            {{ form_start(form, {'attr': {'class': 'ibexa-form-validate'}}) }}
+    {% block left_sidebar %}
+    {% endblock left_sidebar %}
+    <div class="ibexa-edit-content__container">
+        {{ form_start(form, {'attr': {'class': 'ibexa-form-validate'}}) }}
 
-            {% for field in form.children %}
-                {% if not field.rendered %}
-                    {{ form_row(field) }}
-                {% endif %}
-            {% endfor %}
+        {% for field in form.children %}
+            {% if not field.rendered %}
+                {{ form_row(field) }}
+            {% endif %}
+        {% endfor %}
 
-            {{ form_end(form) }}
-        </div>
-        {% block right_sidebar_wrapper %}
-            <div class="col-sm-1 pt-4 px-0 bg-secondary ibexa-context-menu">
-                <div class="ibexa-sticky-container">
-                    {% set sidebar_right = knp_menu_get('sqli_eztoolbox.admin.edit_element.sidebar_right',
-                        [],
-                        {
-                            'save_button_name': form.children.save_entity.vars.id,
-                            'cancel_url': path( 'sqli_eztoolbox_entitymanager_entity_homepage',
-                            { 'fqcn': fqcn } )
-                        }
-                    ) %}
-                    {{ knp_menu_render(sidebar_right, {'template': '@ibexadesign/ui/menu/sidebar_right.html.twig'}) }}
-                </div>
-            </div>
-        {% endblock %}
+        {{ form_end(form) }}
     </div>
+    {% block right_sidebar_wrapper %}
+    {% endblock %}
 {% endblock %}

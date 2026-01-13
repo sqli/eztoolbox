@@ -171,7 +171,8 @@ class BackOfficeActionsLoggerListener implements EventSubscriberInterface
         }
 
         $srcContentId = $event->getContent()->id;
-        $srcVersionId = $event->getVersionInfo()->versionNo;
+        $srcVersion = $event->getVersionInfo() ?? $event->getContent()->getVersionInfo();
+        $srcVersionId = $srcVersion->versionNo;
         $dstParentLocationId = $event->getDestinationLocationCreateStruct()->parentLocationId;
         $this->logger->notice("Content copy :");
         $this->logUserInformations();

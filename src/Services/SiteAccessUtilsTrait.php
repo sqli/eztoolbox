@@ -5,18 +5,13 @@ namespace SQLI\EzToolboxBundle\Services;
 use Ibexa\Bundle\AdminUi\IbexaAdminUiBundle;
 use Ibexa\Core\Base\Exceptions\NotFoundException;
 use Ibexa\Core\MVC\Symfony\SiteAccess\SiteAccessService;
+use Symfony\Contracts\Service\Attribute\Required;
 
 trait SiteAccessUtilsTrait
 {
     protected SiteAccessService $siteAccessService;
 
-    /**
-     * autowiring
-     *
-     * @required
-     *
-     * @param SiteAccessService $siteAccessService
-     */
+    #[Required]
     public function setSiteAccessSettings(SiteAccessService $siteAccessService): void
     {
         $this->siteAccessService = $siteAccessService;

@@ -19,6 +19,7 @@ use Ibexa\Contracts\Core\Repository\Values\Content\Query\SortClause;
 use Ibexa\Contracts\Core\SiteAccess\ConfigResolverInterface;
 use Ibexa\Core\Helper\FieldHelper;
 use Ibexa\Core\Helper\TranslationHelper;
+use Symfony\Contracts\Service\Attribute\Required;
 
 
 class FetchHelper
@@ -31,9 +32,7 @@ class FetchHelper
     protected TranslationHelper $translationhelper;
     protected ContentService $contentservice;
 
-    /**
-     * @required
-     */
+    #[Required]
     public function setDependencies(
         ConfigResolverInterface $configResolver,
         SearchService $searchService,
